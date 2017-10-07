@@ -16,6 +16,8 @@ public:
 
 	void SetStage(size_t new_stage_index, juce::BitmapLEDProgram &program);
 
+	int CountLightOn() const;
+
 private:
 	void ToggleNextColor(size_t x, size_t y, juce::BitmapLEDProgram &program);
 	void SetLedColor(size_t x, size_t y, juce::Colour color, juce::BitmapLEDProgram &program) const;

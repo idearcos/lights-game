@@ -60,3 +60,14 @@ void GameLogic::SetStage(size_t new_stage_index, juce::BitmapLEDProgram &program
 		}
 	}
 }
+
+int GameLogic::CountLightOn() const
+{
+	int count = 0;
+	for (int i = 0; i < 16; ++i) {
+		if (game_state_[i] != Colours::black) {
+			++count;
+		}
+	}
+	return count;
+}

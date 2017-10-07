@@ -97,7 +97,14 @@ void MainComponent::topologyChanged()
 void MainComponent::touchChanged(TouchSurface& surface, const TouchSurface::Touch& touch)
 {
 	// Only react when the finger is pressed initially
-	if (!touch.isTouchStart) return;
+	if (!touch.isTouchStart) {
+		char dbgstr[256];
+		sprintf(dbgstr, "pitch: %f, pressure: %f", (touch.x - touch.startX) / getWidth(), touch.z);
+		//infoLabel.setText(dbgstr, dontSendNotification);
+		audio.pitchChange(1, 300*(touch.x - touch.startX) / getWidth());
+		audio.pressureChange(1, touch.z);
+		return;
+	}
 
 	// Convert to LED coordinates
 	const auto led_x_coord = static_cast<size_t>(touch.x / surface.block.getWidth() * 5);
@@ -109,7 +116,16 @@ void MainComponent::touchChanged(TouchSurface& surface, const TouchSurface::Touc
 	}
 
 	// audio.
-	audio.noteOn(1, getNoteNumberForPad(touch.x, touch.y), touch.z);
+	touchAudio(led_x_coord, led_y_coord, touch.z);
+}
+
+void MainComponent::touchAudio(int x, int y, float z) {
+	// audio.
+	char debugstr[256];
+	sprintf(debugstr, "touch: (%d, %d) -> %d, %f\n", x, y, getNoteNumberForPad(x, y), z);
+	infoLabel.setText(debugstr, dontSendNotification);
+	if (z < 0.02) z = 0.02f;
+	audio.noteOn(1, getNoteNumberForPad(x, y), z);
 }
 
 void MainComponent::buttonReleased(ControlButton& button, Block::Timestamp)
@@ -119,7 +135,7 @@ void MainComponent::buttonReleased(ControlButton& button, Block::Timestamp)
     if(buttonType >= ControlButton::ButtonFunction::button0 && buttonType <= ControlButton::ButtonFunction::button7){
         game_logic_.SetStage(buttonType - ControlButton::ButtonFunction::button0, *reinterpret_cast<juce::BitmapLEDProgram*>(lightpad_block_->getProgram()));
     }
-
+	infoLabel.setText("button released.", dontSendNotification);
 	audio.allNotesOff();
 }
 
@@ -142,8 +158,6 @@ void MainComponent::detachActiveBlock()
 
 int MainComponent::getNoteNumberForPad(int x, int y) const
 {
-	auto xIndex = x / 3;
-	auto yIndex = y / 3;
-
-	return 60 + ((4 - yIndex) * 5) + xIndex;
+	//return 60 + (x * 5) + x;
+	return 60 + game_logic_.CountLightOn();
 }

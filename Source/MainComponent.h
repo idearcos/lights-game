@@ -49,7 +49,7 @@ private:
 
 	int getNoteNumberForPad(int x, int y) const;
 	void touchChanged(TouchSurface&, const TouchSurface::Touch&) override;
-
+	void touchAudio(int x, int y, float z);
 	void buttonPressed(ControlButton&, Block::Timestamp) override { }
 	void buttonReleased(ControlButton&, Block::Timestamp) override;
 
