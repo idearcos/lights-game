@@ -39,5 +39,12 @@ const std::vector<GameState> stages{
         Colours::black, Colours::purple, Colours::purple, Colours::purple, Colours::black,
         Colours::purple, Colours::purple, Colours::black, Colours::black, Colours::purple,
         Colours::black, Colours::purple, Colours::black, Colours::black, Colours::black
+    },
+    {
+        Colours::purple, Colours::black, Colours::black, Colours::purple, Colours::black,
+        Colours::black, Colours::purple, Colours::black, Colours::purple, Colours::black,
+        Colours::purple, Colours::purple, Colours::purple, Colours::black, Colours::purple,
+        Colours::black, Colours::purple, Colours::black, Colours::black, Colours::black,
+        Colours::purple, Colours::purple, Colours::purple, Colours::black, Colours::purple
     }
 };
