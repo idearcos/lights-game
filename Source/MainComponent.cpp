@@ -105,6 +105,9 @@ void MainComponent::touchChanged(TouchSurface& surface, const TouchSurface::Touc
 	const auto height = surface.block.getHeight();
 
 	toggleNextColor(touch.x / width * 5, touch.y / height * 5);
+
+	// audio.
+	audio.noteOn(1, getNoteNumberForPad(touch.x, touch.y), touch.z);
 }
 
 void MainComponent::toggleNextColor(size_t x, size_t y)
@@ -188,6 +191,7 @@ void MainComponent::buttonReleased(ControlButton& button, Block::Timestamp)
         default:
             break;
     }
+	audio.allNotesOff();
 }
 
 void MainComponent::detachActiveBlock()
@@ -205,4 +209,14 @@ void MainComponent::detachActiveBlock()
 	}
 
 	lightpad_block_ = nullptr;
+}
+
+
+
+int MainComponent::getNoteNumberForPad(int x, int y) const
+{
+	auto xIndex = x / 3;
+	auto yIndex = y / 3;
+
+	return 60 + ((4 - yIndex) * 5) + xIndex;
 }

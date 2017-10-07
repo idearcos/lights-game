@@ -29,6 +29,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include <array>
 #include <cstdint>
+#include "Audio.h"
 
 class MainComponent : public Component,
 	public TopologySource::Listener,
@@ -44,6 +45,8 @@ public:
 	void topologyChanged() override;
 
 private:
+
+	int getNoteNumberForPad(int x, int y) const;
 	void touchChanged(TouchSurface&, const TouchSurface::Touch&) override;
 
 	void buttonPressed(ControlButton&, Block::Timestamp) override { }
@@ -69,4 +72,6 @@ private:
 
 	//==============================================================================
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
+
+	Audio audio;
 };
