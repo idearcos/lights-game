@@ -13,6 +13,8 @@
       <FILE id="qnbQP7" name="LightpadComponent.h" compile="0" resource="0"
             file="Source/LightpadComponent.h"/>
       <FILE id="RyfWDq" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="wesEzX" name="Stages.h" compile="0" resource="0" file="Source/Stages.h"/>
+      <FILE id="Gmsc3P" name="Stages.cpp" compile="1" resource="0" file="Source/Stages.cpp"/>
       <FILE id="RVdh1i" name="MainComponent.cpp" compile="1" resource="0"
             file="Source/MainComponent.cpp"/>
       <FILE id="yiP4mu" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
