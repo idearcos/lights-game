@@ -25,6 +25,7 @@
 */
 
 #include "MainComponent.h"
+#include "Stages.h"
 
 MainComponent::MainComponent()
 {
@@ -157,49 +158,8 @@ void MainComponent::buttonReleased(ControlButton& button, Block::Timestamp)
 {
     auto buttonType = button.getType();
     
-    switch (buttonType) {
-        case ControlButton::ButtonFunction::button0: {
-            String message = "This is button 0";
-            break;
-        }
-        case ControlButton::ButtonFunction::button1: {
-            String message1 = "This is button 1";
-            break;
-        }
-        case ControlButton::ButtonFunction::button2: {
-            String message2 = "This is button 2";
-            break;
-        }
-        case ControlButton::ButtonFunction::button3:{
-            String message3 = "This is button 3";
-            break;
-        }
-        case ControlButton::ButtonFunction::button4:{
-            String message4 = "This is button 4";
-            break;
-        }
-        case ControlButton::ButtonFunction::button5:{
-            String message5 = "This is button 5";
-            break;
-        }
-        case ControlButton::ButtonFunction::button6:{
-            String message6 = "This is button 6";
-            break;
-        }
-        case ControlButton::ButtonFunction::button7:{
-            String message7 = "This is button 7";
-            break;
-        }
-        case ControlButton::ButtonFunction::up:{
-            String message8 = "This is button up";
-            break;
-        }
-        case ControlButton::ButtonFunction::down:{
-            String message9 = "This is button down";
-            break;
-        }
-        default:
-            break;
+    if(buttonType >= ControlButton::ButtonFunction::button0 && buttonType <= ControlButton::ButtonFunction::button7){
+        light_colors_ = stages[buttonType - ControlButton::ButtonFunction::button0];
     }
 	audio.allNotesOff();
 }
