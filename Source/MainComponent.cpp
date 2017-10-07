@@ -71,6 +71,7 @@ void MainComponent::topologyChanged()
 		{
 			lightpad_block_ = b;
 
+			// Set bitmap LED program
 			lightpad_block_->setProgram(new BitmapLEDProgram(*lightpad_block_));
 
 			// Register MainContentComponent as a listener to the touch surface
@@ -95,9 +96,48 @@ void MainComponent::topologyChanged()
 }
 
 //==============================================================================
-void MainComponent::touchChanged(TouchSurface&, const TouchSurface::Touch& touch)
+void MainComponent::touchChanged(TouchSurface& surface, const TouchSurface::Touch& touch)
 {
-	// Game logic
+	// Only react when the finger is pressed initially
+	if (!touch.isTouchStart) return;
+
+	const auto width = surface.block.getWidth();
+	const auto height = surface.block.getHeight();
+
+	toggleNextColor(touch.x / width * 5, touch.y / height * 5);
+}
+
+void MainComponent::toggleNextColor(size_t x, size_t y)
+{
+	// Convert x and y to light index
+	const auto light_index = 5 * y + x;
+
+	switch (game_mode_)
+	{
+	case GameMode::BlackAndWhite:
+		if (light_colors_[light_index] == juce::Colours::black)
+		{
+			light_colors_[light_index] = juce::Colours::purple;
+		}
+		else
+		{
+			light_colors_[light_index] = juce::Colours::black;
+		}
+		break;
+	default:
+		break;
+	}
+
+	if (auto program = reinterpret_cast<BitmapLEDProgram*>(lightpad_block_->getProgram()))
+	{
+		for (int ii = 0; ii < 3; ++ii)
+		{
+			for (int jj = 0; jj < 3; ++jj)
+			{
+				program->setLED(3 * x + ii, 3 * y + jj, light_colors_[light_index]);
+			}
+		}
+	}
 }
 
 void MainComponent::buttonReleased(ControlButton& button, Block::Timestamp)

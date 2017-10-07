@@ -51,7 +51,14 @@ private:
 
 	void detachActiveBlock();
 
+	void toggleNextColor(size_t x, size_t y);
+
 private:
+	enum class GameMode
+	{
+		BlackAndWhite,
+		Tricolor
+	} game_mode_{ GameMode::BlackAndWhite };
 	std::array<juce::Colour, 5*5> light_colors_;
 
 	PhysicalTopologySource topologySource;
