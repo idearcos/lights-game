@@ -101,10 +101,16 @@ void MainComponent::touchChanged(TouchSurface& surface, const TouchSurface::Touc
 	// Only react when the finger is pressed initially
 	if (!touch.isTouchStart) return;
 
-	const auto width = surface.block.getWidth();
-	const auto height = surface.block.getHeight();
+	// Convert to LED coordinates
+	const auto led_x = static_cast<size_t>(touch.x / surface.block.getWidth() * 5);
+	const auto led_y = static_cast<size_t>(touch.y / surface.block.getHeight() * 5);
 
-	toggleNextColor(touch.x / width * 5, touch.y / height * 5);
+	toggleNextColor(led_x, led_y);
+
+	if (led_x > 0) { toggleNextColor(led_x - 1, led_y); }
+	if (led_x < 4) { toggleNextColor(led_x + 1, led_y); }
+	if (led_y > 0) { toggleNextColor(led_x, led_y - 1); }
+	if (led_y < 4) { toggleNextColor(led_x, led_y + 1); }
 
 	// audio.
 	audio.noteOn(1, getNoteNumberForPad(touch.x, touch.y), touch.z);
@@ -112,7 +118,6 @@ void MainComponent::touchChanged(TouchSurface& surface, const TouchSurface::Touc
 
 void MainComponent::toggleNextColor(size_t x, size_t y)
 {
-	// Convert x and y to light index
 	const auto light_index = 5 * y + x;
 
 	switch (game_mode_)
@@ -131,13 +136,18 @@ void MainComponent::toggleNextColor(size_t x, size_t y)
 		break;
 	}
 
+	setLedColor(x, y, light_colors_[light_index]);
+}
+
+void MainComponent::setLedColor(size_t x, size_t y, juce::Colour color) const
+{
 	if (auto program = reinterpret_cast<BitmapLEDProgram*>(lightpad_block_->getProgram()))
 	{
 		for (int ii = 0; ii < 3; ++ii)
 		{
 			for (int jj = 0; jj < 3; ++jj)
 			{
-				program->setLED(3 * x + ii, 3 * y + jj, light_colors_[light_index]);
+				program->setLED(3 * x + ii, 3 * y + jj, color);
 			}
 		}
 	}
