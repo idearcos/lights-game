@@ -55,6 +55,7 @@ private:
 	void detachActiveBlock();
 
 	void toggleNextColor(size_t x, size_t y);
+	void MainComponent::setLedColor(size_t x, size_t y, juce::Colour color) const;
 
 private:
 	enum class GameMode
