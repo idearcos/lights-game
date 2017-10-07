@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="aa4reI" name="LightsGame" projectType="guiapp" version="1.0.0"
+<JUCERPROJECT id="aa4reI" name="LightsOut" projectType="guiapp" version="1.0.0"
               bundleIdentifier="com.yourcompany.BlocksDrawing" includeBinaryInAppConfig="1"
               jucerVersion="5.1.2" displaySplashScreen="0" reportAppUsage="0"
               splashScreenColour="Dark" cppLanguageStandard="11">
-  <MAINGROUP id="yXiPIx" name="LightsGame">
+  <MAINGROUP id="yXiPIx" name="LightsOut">
     <GROUP id="{092A4D5B-31E2-5D03-9B41-81C10EC447E8}" name="Source">
       <FILE id="qnbQP7" name="LightpadComponent.h" compile="0" resource="0"
             file="Source/LightpadComponent.h"/>
@@ -28,7 +28,7 @@
         <MODULEPATH id="juce_gui_basics" path="../../../modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../modules"/>
         <MODULEPATH id="juce_opengl" path="../../../modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../../../modules"/>
         <MODULEPATH id="juce_audio_formats" path="../../../modules"/>
         <MODULEPATH id="juce_blocks_basics" path="../../../modules"/>
@@ -54,7 +54,7 @@
         <MODULEPATH id="juce_audio_processors" path="../../../modules"/>
         <MODULEPATH id="juce_audio_formats" path="../../../modules"/>
         <MODULEPATH id="juce_audio_devices" path="../../../modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_IPHONE>
     <VS2015 targetFolder="Builds/VisualStudio2015">
@@ -75,7 +75,7 @@
         <MODULEPATH id="juce_blocks_basics" path="../../../modules"/>
         <MODULEPATH id="juce_audio_formats" path="../../../modules"/>
         <MODULEPATH id="juce_audio_devices" path="../../../modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../../../modules"/>
         <MODULEPATH id="juce_audio_processors" path="../../../modules"/>
       </MODULEPATHS>
@@ -100,7 +100,7 @@
         <MODULEPATH id="juce_audio_processors" path="..\..\JUCE\modules"/>
         <MODULEPATH id="juce_audio_formats" path="..\..\JUCE\modules"/>
         <MODULEPATH id="juce_audio_devices" path="..\..\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_basics" path="..\..\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../JUCE/modules"/>
       </MODULEPATHS>
     </VS2017>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
@@ -119,7 +119,7 @@
         <MODULEPATH id="juce_blocks_basics" path="../../../modules"/>
         <MODULEPATH id="juce_audio_formats" path="../../../modules"/>
         <MODULEPATH id="juce_audio_devices" path="../../../modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../JUCE/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../../../modules"/>
         <MODULEPATH id="juce_audio_processors" path="../../../modules"/>
       </MODULEPATHS>
