@@ -29,6 +29,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include <array>
 #include <cstdint>
+#include "GameLogic.h"
 #include "Audio.h"
 
 class MainComponent : public Component,
@@ -54,16 +55,8 @@ private:
 
 	void detachActiveBlock();
 
-	void toggleNextColor(size_t x, size_t y);
-	void MainComponent::setLedColor(size_t x, size_t y, juce::Colour color) const;
-
 private:
-	enum class GameMode
-	{
-		BlackAndWhite,
-		Tricolor
-	} game_mode_{ GameMode::BlackAndWhite };
-	std::array<juce::Colour, 5*5> light_colors_;
+	GameLogic game_logic_;
 
 	PhysicalTopologySource topologySource;
 	Block::Ptr lightpad_block_;

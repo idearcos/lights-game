@@ -25,7 +25,6 @@
 */
 
 #include "MainComponent.h"
-#include "Stages.h"
 
 MainComponent::MainComponent()
 {
@@ -37,8 +36,6 @@ MainComponent::MainComponent()
 	addAndMakeVisible(infoLabel);
 
 	setSize(600, 600);
-
-	light_colors_.fill(juce::Colours::black);
 }
 
 MainComponent::~MainComponent()
@@ -103,55 +100,16 @@ void MainComponent::touchChanged(TouchSurface& surface, const TouchSurface::Touc
 	if (!touch.isTouchStart) return;
 
 	// Convert to LED coordinates
-	const auto led_x = static_cast<size_t>(touch.x / surface.block.getWidth() * 5);
-	const auto led_y = static_cast<size_t>(touch.y / surface.block.getHeight() * 5);
+	const auto led_x_coord = static_cast<size_t>(touch.x / surface.block.getWidth() * 5);
+	const auto led_y_coord = static_cast<size_t>(touch.y / surface.block.getHeight() * 5);
 
-	toggleNextColor(led_x, led_y);
-
-	if (led_x > 0) { toggleNextColor(led_x - 1, led_y); }
-	if (led_x < 4) { toggleNextColor(led_x + 1, led_y); }
-	if (led_y > 0) { toggleNextColor(led_x, led_y - 1); }
-	if (led_y < 4) { toggleNextColor(led_x, led_y + 1); }
+	if (auto program = reinterpret_cast<BitmapLEDProgram*>(lightpad_block_->getProgram()))
+	{
+		game_logic_.OnLedPressed(led_x_coord, led_y_coord, *program);
+	}
 
 	// audio.
 	audio.noteOn(1, getNoteNumberForPad(touch.x, touch.y), touch.z);
-}
-
-void MainComponent::toggleNextColor(size_t x, size_t y)
-{
-	const auto light_index = 5 * y + x;
-
-	switch (game_mode_)
-	{
-	case GameMode::BlackAndWhite:
-		if (light_colors_[light_index] == juce::Colours::black)
-		{
-			light_colors_[light_index] = juce::Colours::purple;
-		}
-		else
-		{
-			light_colors_[light_index] = juce::Colours::black;
-		}
-		break;
-	default:
-		break;
-	}
-
-	setLedColor(x, y, light_colors_[light_index]);
-}
-
-void MainComponent::setLedColor(size_t x, size_t y, juce::Colour color) const
-{
-	if (auto program = reinterpret_cast<BitmapLEDProgram*>(lightpad_block_->getProgram()))
-	{
-		for (int ii = 0; ii < 3; ++ii)
-		{
-			for (int jj = 0; jj < 3; ++jj)
-			{
-				program->setLED(3 * x + ii, 3 * y + jj, color);
-			}
-		}
-	}
 }
 
 void MainComponent::buttonReleased(ControlButton& button, Block::Timestamp)
@@ -159,8 +117,9 @@ void MainComponent::buttonReleased(ControlButton& button, Block::Timestamp)
     auto buttonType = button.getType();
     
     if(buttonType >= ControlButton::ButtonFunction::button0 && buttonType <= ControlButton::ButtonFunction::button7){
-        light_colors_ = stages[buttonType - ControlButton::ButtonFunction::button0];
+        game_logic_.SetStage(buttonType - ControlButton::ButtonFunction::button0, *reinterpret_cast<juce::BitmapLEDProgram*>(lightpad_block_->getProgram()));
     }
+
 	audio.allNotesOff();
 }
 
@@ -180,8 +139,6 @@ void MainComponent::detachActiveBlock()
 
 	lightpad_block_ = nullptr;
 }
-
-
 
 int MainComponent::getNoteNumberForPad(int x, int y) const
 {
