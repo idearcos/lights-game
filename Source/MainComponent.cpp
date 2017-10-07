@@ -79,16 +79,18 @@ void MainComponent::topologyChanged()
 				surface->addListener(this);
 			}
 
-			// Register MainContentComponent as a listener to any buttons
-			for (auto button : lightpad_block_->getButtons())
-			{
-				button->addListener(this);
-			}
-
 			infoLabel.setText("Look at the lightpad block to play the game!", juce::dontSendNotification);
-
-			break;
-		}
+        }
+        else if(b->getType() == Block::Type::developerControlBlock)
+        {
+            control_block_ = b;
+            
+            // Register MainContentComponent as a listener to any control buttons
+            for (auto controlButton : control_block_->getButtons())
+            {
+                controlButton->addListener(this);
+            }
+        }
 	}
 }
 

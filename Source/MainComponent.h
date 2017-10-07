@@ -56,6 +56,7 @@ private:
 
 	PhysicalTopologySource topologySource;
 	Block::Ptr lightpad_block_;
+    Block::Ptr control_block_;
 
 	Label infoLabel;
 
