@@ -28,14 +28,16 @@
 
 MainComponent::MainComponent()
 {
-    // Register MainContentComponent as a listener to the PhysicalTopologySource object
-    topologySource.addListener (this);
+	// Register MainContentComponent as a listener to the PhysicalTopologySource object
+	topologySource.addListener(this);
 
-    infoLabel.setText ("Connect a Lightpad Block to start the game!", dontSendNotification);
-    infoLabel.setJustificationType (Justification::centred);
-    addAndMakeVisible (infoLabel);
+	infoLabel.setText("Connect a Lightpad Block to start the game!", dontSendNotification);
+	infoLabel.setJustificationType(Justification::centred);
+	addAndMakeVisible(infoLabel);
 
-    setSize (600, 600);
+	setSize(600, 600);
+
+	light_colors_.fill(juce::Colours::black);
 }
 
 MainComponent::~MainComponent()
