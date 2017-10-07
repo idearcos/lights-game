@@ -34,3 +34,11 @@ JuceLibraryCode
 *.app
 /Builds/VisualStudio2017/.vs
 /Builds/VisualStudio2017/.vs
+
+*.VC.db
+*.VC.opendb
+**/VisualStudio2015/Win32
+**/VisualStudio2015/x64
+**/VisualStudio2017/Win32
+**/VisualStudio2017/x64
+**/.vs
