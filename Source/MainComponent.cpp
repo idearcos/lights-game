@@ -25,6 +25,7 @@
 */
 
 #include "MainComponent.h"
+#include <thread>
 
 MainComponent::MainComponent() :
 	you_win_screen_{ GetYouWinScreen() }
@@ -43,7 +44,7 @@ MainComponent::~MainComponent()
 {
 	if (lightpad_block_ != nullptr)
 	{
-		detachActiveBlock();
+		detachActiveBlocks();
 	}
 }
 
@@ -54,10 +55,10 @@ void MainComponent::resized()
 
 void MainComponent::topologyChanged()
 {
-	infoLabel.setVisible(true);
+	infoLabel.setText("Connect a Lightpad Block to start the game!", dontSendNotification);
 
 	// Reset the activeBlock object
-	detachActiveBlock();
+	detachActiveBlocks();
 
 	// Get the array of currently connected Block objects from the PhysicalTopologySource
 	auto blocks = topologySource.getCurrentTopology().blocks;
@@ -66,7 +67,7 @@ void MainComponent::topologyChanged()
 	for (auto b : blocks)
 	{
 		// Find the first Lightpad
-		if (b->getType() == Block::Type::lightPadBlock)
+		if (b->getType() == Block::Type::lightPadBlock && !lightpad_block_)
 		{
 			lightpad_block_ = b;
 
@@ -80,8 +81,13 @@ void MainComponent::topologyChanged()
 			}
 
 			infoLabel.setText("Look at the lightpad block to play the game!", juce::dontSendNotification);
+
+			if (!isTimerRunning())
+			{
+				startTimer(300);
+			}
         }
-        else if(b->getType() == Block::Type::developerControlBlock)
+        else if(b->getType() == Block::Type::developerControlBlock && !control_block_)
         {
             control_block_ = b;
             
@@ -90,6 +96,21 @@ void MainComponent::topologyChanged()
             {
                 controlButton->addListener(this);
             }
+
+			if (game_logic_.GetStageIndex() < 8)
+			{
+				for (auto controlButton : control_block_->getButtons())
+				{
+					if ((controlButton->getType() - ControlButton::button0) == game_logic_.GetStageIndex())
+					{
+						controlButton->setLightColour(LEDColour{ juce::Colours::blue });
+					}
+					else
+					{
+						controlButton->setLightColour(LEDColour{ juce::Colours::black });
+					}
+				}
+			}
         }
 	}
 }
@@ -155,30 +176,53 @@ void MainComponent::touchAudio(int x, int y, float z) {
 
 void MainComponent::buttonReleased(ControlButton& button, Block::Timestamp)
 {
+	if (lightpad_block_ == nullptr) return;
+
+	const auto program = reinterpret_cast<juce::BitmapLEDProgram*>(lightpad_block_->getProgram());
+	if (program == nullptr) return;
+
+	// Turn off all buttons first
+	for (auto &other_button : button.block.getButtons())
+	{
+		other_button->setLightColour(LEDColour{ juce::Colours::black });
+	}
+
     auto buttonType = button.getType();
     
     if(buttonType >= ControlButton::ButtonFunction::button0 && buttonType <= ControlButton::ButtonFunction::button7){
 		stopTimer();
-		game_logic_.SetStage(buttonType - ControlButton::ButtonFunction::button0, *reinterpret_cast<juce::BitmapLEDProgram*>(lightpad_block_->getProgram()));
+		game_logic_.SetStage(buttonType - ControlButton::ButtonFunction::button0, program);
+		button.setLightColour(LEDColour{ juce::Colours::blue });
 	}
 	audio.allNotesOff();
 }
 
-void MainComponent::detachActiveBlock()
+void MainComponent::detachActiveBlocks()
 {
-	if (!lightpad_block_) return;
-
-	if (auto surface = lightpad_block_->getTouchSurface())
+	if (lightpad_block_)
 	{
-		surface->removeListener(this);
+		if (auto surface = lightpad_block_->getTouchSurface())
+		{
+			surface->removeListener(this);
+		}
+
+		for (auto button : lightpad_block_->getButtons())
+		{
+			button->removeListener(this);
+		}
+
+		lightpad_block_ = nullptr;
 	}
 
-	for (auto button : lightpad_block_->getButtons())
+	if (control_block_)
 	{
-		button->removeListener(this);
-	}
+		for (auto controlButton : control_block_->getButtons())
+		{
+			controlButton->removeListener(this);
+		}
 
-	lightpad_block_ = nullptr;
+		control_block_ = nullptr;
+	}
 }
 
 int MainComponent::getNoteNumberForPad(int x, int y) const
@@ -189,24 +233,36 @@ int MainComponent::getNoteNumberForPad(int x, int y) const
 
 void MainComponent::timerCallback()
 {
-	const auto row_size = you_win_screen_.size() / 15;
+	if (!lightpad_block_) return;
+
 	const auto program = reinterpret_cast<juce::BitmapLEDProgram*>(lightpad_block_->getProgram());
-	for (int x = 0; x < 15; ++x)
+	if (program == nullptr) return;
+
+	if (game_logic_.IsStageCleared())
 	{
-		for (int y = 0; y < 15; ++y)
+		const auto row_size = you_win_screen_.size() / 15;
+		for (int x = 0; x < 15; ++x)
 		{
-			auto pixel_offset = you_win_scoll_ + x;
-			if (pixel_offset >= row_size) pixel_offset -= row_size;
+			for (int y = 0; y < 15; ++y)
+			{
+				auto pixel_offset = you_win_scoll_ + x;
+				if (pixel_offset >= row_size) pixel_offset -= row_size;
 
-			pixel_offset += y * row_size;
+				pixel_offset += y * row_size;
 
-			program->setLED(x, y, you_win_screen_[pixel_offset]);
+				program->setLED(x, y, you_win_screen_[pixel_offset]);
+			}
+		}
+
+		you_win_scoll_ += 1;
+		if (you_win_scoll_ >= row_size)
+		{
+			you_win_scoll_ = 0;
 		}
 	}
-
-	you_win_scoll_ += 1;
-	if (you_win_scoll_ >= row_size)
+	else
 	{
-		you_win_scoll_ = 0;
+		game_logic_.RefreshWholeScreen(*program);
+		stopTimer();
 	}
 }

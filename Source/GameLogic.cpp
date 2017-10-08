@@ -48,18 +48,16 @@ void GameLogic::SetLedColor(size_t x, size_t y, juce::Colour color, juce::Bitmap
 	}
 }
 
-void GameLogic::SetStage(size_t new_stage_index, juce::BitmapLEDProgram &program)
+void GameLogic::SetStage(size_t new_stage_index, juce::BitmapLEDProgram* program)
 {
 	current_stage_ = Stage::GetStage(new_stage_index);
+	stage_index_ = new_stage_index;
 
 	game_state_ = current_stage_.initial_state;
 
-	for (int x = 0; x < 5; ++x)
+	if (program)
 	{
-		for (int y = 0; y < 5; ++y)
-		{
-			SetLedColor(x, y, game_state_[5 * y + x], program);
-		}
+		RefreshWholeScreen(*program);
 	}
 }
 
@@ -77,6 +75,17 @@ int GameLogic::CountLightOn() const
 void GameLogic::setLedColour(Colour col)
 {
 	onColour = col;
+}
+
+void GameLogic::RefreshWholeScreen(juce::BitmapLEDProgram &program)
+{
+	for (int x = 0; x < 5; ++x)
+	{
+		for (int y = 0; y < 5; ++y)
+		{
+			SetLedColor(x, y, game_state_[5 * y + x], program);
+		}
+	}
 }
 
 GameLogic::Stage GameLogic::Stage::GetStage(size_t stage_index)
