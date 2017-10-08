@@ -2,6 +2,8 @@
 
 void GameLogic::OnLedPressed(size_t led_x_coord, size_t led_y_coord, juce::BitmapLEDProgram &program)
 {
+	if (current_stage_.IsStageClear(game_state_)) { return; }
+
 	++number_of_moves_;
 
 	ToggleNextColor(led_x_coord, led_y_coord, program);
@@ -48,9 +50,9 @@ void GameLogic::SetLedColor(size_t x, size_t y, juce::Colour color, juce::Bitmap
 
 void GameLogic::SetStage(size_t new_stage_index, juce::BitmapLEDProgram &program)
 {
-	if (new_stage_index > stages_.size()) return;
+	current_stage_ = Stage::GetStage(new_stage_index);
 
-	game_state_ = stages_[new_stage_index];
+	game_state_ = current_stage_.initial_state;
 
 	for (int x = 0; x < 5; ++x)
 	{
@@ -75,4 +77,90 @@ int GameLogic::CountLightOn() const
 void GameLogic::setLedColour(Colour col)
 {
 	onColour = col;
+}
+
+GameLogic::Stage GameLogic::Stage::GetStage(size_t stage_index)
+{
+	Stage stage;
+	stage.IsStageClear = [](const GameState &game_state) { return std::all_of(game_state.cbegin(), game_state.cend(), [](const juce::Colour& color) { return color == juce::Colours::black; }); };
+
+	switch (stage_index)
+	{
+	case 1:
+		stage.initial_state = {
+			Colours::purple, Colours::purple, Colours::black, Colours::black, Colours::black,
+			Colours::purple, Colours::black, Colours::purple, Colours::black, Colours::black,
+			Colours::black, Colours::purple, Colours::purple, Colours::purple, Colours::black,
+			Colours::black, Colours::black, Colours::purple, Colours::black, Colours::purple,
+			Colours::black, Colours::black, Colours::black, Colours::purple, Colours::purple
+		};
+		stage.target = 0;
+		break;
+	case 2:
+		stage.initial_state = {
+			Colours::black, Colours::black, Colours::purple, Colours::purple, Colours::purple,
+			Colours::black, Colours::purple, Colours::black, Colours::black, Colours::purple,
+			Colours::purple, Colours::black, Colours::black, Colours::purple, Colours::purple,
+			Colours::purple, Colours::black, Colours::purple, Colours::black, Colours::black,
+			Colours::purple, Colours::purple, Colours::black, Colours::purple, Colours::black
+		};
+		stage.target = 0;
+		break;
+	case 3:
+		stage.initial_state = {
+			Colours::black, Colours::black, Colours::purple, Colours::purple, Colours::black,
+			Colours::black, Colours::black, Colours::purple, Colours::purple, Colours::purple,
+			Colours::black, Colours::purple, Colours::purple, Colours::purple, Colours::black,
+			Colours::purple, Colours::purple, Colours::black, Colours::black, Colours::purple,
+			Colours::black, Colours::purple, Colours::black, Colours::black, Colours::black
+		};
+		stage.target = 0;
+		break;
+	case 4:
+		stage.initial_state = {
+			Colours::purple, Colours::black, Colours::black, Colours::purple, Colours::black,
+			Colours::black, Colours::purple, Colours::black, Colours::purple, Colours::black,
+			Colours::purple, Colours::purple, Colours::purple, Colours::black, Colours::purple,
+			Colours::black, Colours::purple, Colours::black, Colours::black, Colours::black,
+			Colours::purple, Colours::purple, Colours::purple, Colours::black, Colours::purple
+		};
+		stage.target = 0;
+		break;
+	case 5:
+		stage.initial_state = {
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple
+		};
+		stage.target = 0;
+		break;
+	case 6:
+		stage.initial_state = {
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple
+		};
+		stage.target = 0;
+		break;
+	case 7:
+		stage.initial_state = {
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
+			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple
+		};
+		stage.target = 0;
+		break;
+	default:
+		stage.initial_state.fill(Colours::black);
+		stage.IsStageClear = [](const GameState &game_state) { return false; };
+		break;
+	}
+
+	return stage;
 }

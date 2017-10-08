@@ -26,7 +26,8 @@
 
 #include "MainComponent.h"
 
-MainComponent::MainComponent()
+MainComponent::MainComponent() :
+	you_win_screen_{ GetYouWinScreen() }
 {
 	// Register MainContentComponent as a listener to the PhysicalTopologySource object
 	topologySource.addListener(this);
@@ -98,7 +99,7 @@ void MainComponent::topologyChanged()
 void MainComponent::touchChanged(TouchSurface& surface, const TouchSurface::Touch& touch)
 {
 	if (touch.isTouchEnd) {
-		infoLabel.setText("touch end!", dontSendNotification);
+		//infoLabel.setText("touch end!", dontSendNotification);
 		isTouch = false;
 	}
 	// Only react when the finger is pressed initially
@@ -124,7 +125,18 @@ void MainComponent::touchChanged(TouchSurface& surface, const TouchSurface::Touc
 
 	if (auto program = reinterpret_cast<BitmapLEDProgram*>(lightpad_block_->getProgram()))
 	{
-		game_logic_.OnLedPressed(led_x_coord, led_y_coord, *program);
+		if (!game_logic_.IsStageCleared())
+		{
+			game_logic_.OnLedPressed(led_x_coord, led_y_coord, *program);
+			if (game_logic_.IsStageCleared())
+			{
+				startTimer(100);
+			}
+		}
+		else
+		{
+			game_logic_.OnLedPressed(led_x_coord, led_y_coord, *program);
+		}
 	}
 
 	// audio.
@@ -135,7 +147,7 @@ void MainComponent::touchAudio(int x, int y, float z) {
 	// audio.
 	char debugstr[256];
 	sprintf(debugstr, "touch: (%d, %d) -> %d, %f\n", x, y, getNoteNumberForPad(x, y), z);
-	infoLabel.setText(debugstr, dontSendNotification);
+	//infoLabel.setText(debugstr, dontSendNotification);
 	if (z < 0.02) z = 0.02f;
 	audio.noteOn(1, getNoteNumberForPad(x, y), z);
 	audio.noteOn(2, 145 - getNoteNumberForPad(x, y), z);
@@ -146,9 +158,9 @@ void MainComponent::buttonReleased(ControlButton& button, Block::Timestamp)
     auto buttonType = button.getType();
     
     if(buttonType >= ControlButton::ButtonFunction::button0 && buttonType <= ControlButton::ButtonFunction::button7){
-        game_logic_.SetStage(buttonType - ControlButton::ButtonFunction::button0, *reinterpret_cast<juce::BitmapLEDProgram*>(lightpad_block_->getProgram()));
-    }
-	infoLabel.setText("button released.", dontSendNotification);
+		stopTimer();
+		game_logic_.SetStage(buttonType - ControlButton::ButtonFunction::button0, *reinterpret_cast<juce::BitmapLEDProgram*>(lightpad_block_->getProgram()));
+	}
 	audio.allNotesOff();
 }
 
@@ -173,4 +185,28 @@ int MainComponent::getNoteNumberForPad(int x, int y) const
 {
 	//return 60 + (x * 5) + x;
 	return 60 + game_logic_.CountLightOn();
+}
+
+void MainComponent::timerCallback()
+{
+	const auto row_size = you_win_screen_.size() / 15;
+	const auto program = reinterpret_cast<juce::BitmapLEDProgram*>(lightpad_block_->getProgram());
+	for (int x = 0; x < 15; ++x)
+	{
+		for (int y = 0; y < 15; ++y)
+		{
+			auto pixel_offset = you_win_scoll_ + x;
+			if (pixel_offset >= row_size) pixel_offset -= row_size;
+
+			pixel_offset += y * row_size;
+
+			program->setLED(x, y, you_win_screen_[pixel_offset]);
+		}
+	}
+
+	you_win_scoll_ += 1;
+	if (you_win_scoll_ >= row_size)
+	{
+		you_win_scoll_ = 0;
+	}
 }

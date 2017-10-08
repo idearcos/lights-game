@@ -9,10 +9,12 @@ public:
 	GameLogic()
 	{
 		game_state_.fill(juce::Colours::black);
+		current_stage_ = Stage::GetStage(0);
 	}
 	~GameLogic() = default;
 
 	void OnLedPressed(size_t led_x_coord, size_t led_y_coord, juce::BitmapLEDProgram &program);
+	bool IsStageCleared() const { return current_stage_.IsStageClear(game_state_); }
 
 	void SetStage(size_t new_stage_index, juce::BitmapLEDProgram &program);
 
@@ -36,37 +38,17 @@ private:
 	GameState game_state_;
 
 	size_t number_of_moves_{ 0 };
+	size_t stage_index_{ 1 };
 	Colour onColour = Colours::purple; // purple
 
 private:
-	const std::vector<GameState> stages_{
-		{
-			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
-			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
-			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
-			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple,
-			Colours::purple, Colours::purple, Colours::purple, Colours::purple, Colours::purple
-		},
-		{
-			Colours::black, Colours::black, Colours::purple, Colours::purple, Colours::purple,
-			Colours::black, Colours::purple, Colours::black, Colours::black, Colours::purple,
-			Colours::purple, Colours::black, Colours::black, Colours::purple, Colours::purple,
-			Colours::purple, Colours::black, Colours::purple, Colours::black, Colours::black,
-			Colours::purple, Colours::purple, Colours::black, Colours::purple, Colours::black
-		},
-		{
-			Colours::black, Colours::black, Colours::purple, Colours::purple, Colours::black,
-			Colours::black, Colours::black, Colours::purple, Colours::purple, Colours::purple,
-			Colours::black, Colours::purple, Colours::purple, Colours::purple, Colours::black,
-			Colours::purple, Colours::purple, Colours::black, Colours::black, Colours::purple,
-			Colours::black, Colours::purple, Colours::black, Colours::black, Colours::black
-		},
-		{
-			Colours::purple, Colours::black, Colours::black, Colours::purple, Colours::black,
-			Colours::black, Colours::purple, Colours::black, Colours::purple, Colours::black,
-			Colours::purple, Colours::purple, Colours::purple, Colours::black, Colours::purple,
-			Colours::black, Colours::purple, Colours::black, Colours::black, Colours::black,
-			Colours::purple, Colours::purple, Colours::purple, Colours::black, Colours::purple
-		}
-	};
+	struct Stage
+	{
+		GameState initial_state;
+		size_t target;
+
+		std::function<bool(const GameState &game_state)> IsStageClear;
+
+		static Stage GetStage(size_t stage_index);
+	} current_stage_;
 };
