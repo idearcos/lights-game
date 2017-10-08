@@ -21,7 +21,7 @@ void GameLogic::ToggleNextColor(size_t x, size_t y, juce::BitmapLEDProgram &prog
 	case GameMode::BlackAndWhite:
 		if (game_state_[light_index] == juce::Colours::black)
 		{
-			game_state_[light_index] = juce::Colours::purple;
+			game_state_[light_index] = onColour;
 		}
 		else
 		{
@@ -70,4 +70,9 @@ int GameLogic::CountLightOn() const
 		}
 	}
 	return count;
+}
+
+void GameLogic::setLedColour(Colour col)
+{
+	onColour = col;
 }

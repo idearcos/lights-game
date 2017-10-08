@@ -93,16 +93,28 @@ void MainComponent::topologyChanged()
 	}
 }
 
+
 //==============================================================================
 void MainComponent::touchChanged(TouchSurface& surface, const TouchSurface::Touch& touch)
 {
+	if (touch.isTouchEnd) {
+		infoLabel.setText("touch end!", dontSendNotification);
+		isTouch = false;
+	}
 	// Only react when the finger is pressed initially
 	if (!touch.isTouchStart) {
 		char dbgstr[256];
 		sprintf(dbgstr, "pitch: %f, pressure: %f", (touch.x - touch.startX) / getWidth(), touch.z);
 		//infoLabel.setText(dbgstr, dontSendNotification);
-		audio.pitchChange(1, 300*(touch.x - touch.startX) / getWidth());
+		audio.pitchChange(1, 300 * (touch.x - touch.startX) / getWidth());
 		audio.pressureChange(1, touch.z);
+		audio.pitchChange(2, 300 * (touch.x - touch.startX) / getWidth());
+		audio.pressureChange(2, touch.z);
+		//if (!isTouch && touch.z > 0.5) {
+		//	game_logic_.setLedColour(ledColour[ledColourIndex]);
+		//	if (++ledColourIndex > 5) ledColourIndex = 0;
+		//	isTouch = true;
+		//}
 		return;
 	}
 
@@ -126,6 +138,7 @@ void MainComponent::touchAudio(int x, int y, float z) {
 	infoLabel.setText(debugstr, dontSendNotification);
 	if (z < 0.02) z = 0.02f;
 	audio.noteOn(1, getNoteNumberForPad(x, y), z);
+	audio.noteOn(2, 145 - getNoteNumberForPad(x, y), z);
 }
 
 void MainComponent::buttonReleased(ControlButton& button, Block::Timestamp)

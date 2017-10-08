@@ -68,4 +68,9 @@ private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 
 	Audio audio;
+	bool isTouch = false;
+	const Colour ledColour[6] = {
+		Colours::purple, Colours::aqua, Colours::orange, Colours::green, Colours::pink, Colours::yellow
+	};
+	int ledColourIndex = 0;
 };

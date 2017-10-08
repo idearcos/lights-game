@@ -17,6 +17,7 @@ public:
 	void SetStage(size_t new_stage_index, juce::BitmapLEDProgram &program);
 
 	int CountLightOn() const;
+	void setLedColour(Colour col);
 
 private:
 	void ToggleNextColor(size_t x, size_t y, juce::BitmapLEDProgram &program);
@@ -35,6 +36,7 @@ private:
 	GameState game_state_;
 
 	size_t number_of_moves_{ 0 };
+	Colour onColour = Colours::purple; // purple
 
 private:
 	const std::vector<GameState> stages_{
