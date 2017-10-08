@@ -84,6 +84,7 @@ void MainComponent::topologyChanged()
 
 			if (!isTimerRunning())
 			{
+				you_win_scoll_ = 0;
 				startTimer(300);
 			}
         }
